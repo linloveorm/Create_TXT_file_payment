@@ -148,15 +148,16 @@ for paid_itr in range(check):
 paid_l = len(str(paid_data_DCT))+1
 
 #print paid amount
-zr = set_zero(paid_l,16)        
-paid_amount = zr+str(round(paid_data_DCT*100))
+# zr = set_zero(paid_l,13)        
+# paid_amount = zr+str(round(paid_data_DCT*100))
 
 #Defind variable DCT
 strs = ""
 total_MCL = 0
 str_Detail_MCL = ""
 types_mcl = ""
-
+types = ""
+types_dct = ""
 
 #Defind variable MCL
 
@@ -175,18 +176,18 @@ for d in range(check):
         types = sort['records'][d]['fields']['Payment Type']
         #Setup Type DCT
         if types == "Direct Credit (DCT)":
-            types = "HDCT"
+            types_dct = "HDCT"
             if status == "False":
                 # list_id = 0
                 c += 1 #ลำดับที่ของรายการ
                 #print amount of list
-                f = open(types+today+".txt","w+")
+                f = open(types_dct+today+".txt","w+")
                 zero = set_zero(len(str(c)),17)
                 amount_list = zero+str(c)+"N"
                 
                 #Header & Part Identifier
                 # print(paid_amount)
-                f.write(types+(' '*16)+batch+(' '*14)+acc+" "+paid_amount+" "+today+(' '*25)+account_name.ljust(50,' ')+today+amount_list+(' '*5)+"\n")
+                f.write(types_dct+(' '*16)+batch+(' '*14)+acc+" "+str(round(paid_data_DCT*100)).rjust(15,'0')+" "+today+(' '*25)+account_name.ljust(50,' ')+today+amount_list+(' '*5)+"\n")
                 
                 zer = set_zero(len(str(c)),5)
 
@@ -291,7 +292,7 @@ for d in range(check):
     
 
 # print Detail DCT        
-f = open(types+today+".txt","a")
+f = open(types_dct+today+".txt","a")
 f.write(strs)
 
 # print Detail MCL
