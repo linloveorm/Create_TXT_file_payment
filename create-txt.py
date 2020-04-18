@@ -1,11 +1,14 @@
 import datetime
 import requests
 import json
+import os
+
+os.chdir('D:\\KBank')
 
 
 
 def get_account():
-    URL_account_payable_sort = "https://api.airtable.com/v0/appqOh1FcRkhI3EqL/Account%20Payable?api_key=keyuZ9jZifvOzDgPO&sort[0][field]=ID"
+    URL_account_payable_sort = "https://api.airtable.com/v0/appPPfFjCC9DChJWc/Account%20Payable?api_key=keyuZ9jZifvOzDgPO&sort[0][field]=Payable%20ID"
     account_payable_sort = requests.get(URL_account_payable_sort)
     payable_sort = account_payable_sort.json()
     lists = []
@@ -31,7 +34,7 @@ def search_acc(id):
     while k < len(all_list):
         if id == all_list[k]['id']:
             #print(all_list)
-            return all_list[k]['fields']['Bank Account Number'],all_list[k]['fields']['Bank Account Name'],all_list[k]['fields']['ID'],all_list[k]['fields']['Bank']
+            return all_list[k]['fields']['Bank Account Number'],all_list[k]['fields']['Bank Account Name'],all_list[k]['fields']['Payable ID'],all_list[k]['fields']['Bank'],all_list[k]['fields']['Payable ID']
         else:
             k += 1
 
@@ -47,17 +50,18 @@ def set_zero(ln,num):
 
 
 
-date=datetime.datetime.now()
+date = datetime.datetime.now()
+date_mcl = datetime.date.today()
 
 
 
-URL_payment_log = "https://api.airtable.com/v0/appqOh1FcRkhI3EqL/Payment%20Log?api_key=keyuZ9jZifvOzDgPO"
-URL_payment_status = "https://api.airtable.com/v0/appqOh1FcRkhI3EqL/Payment%20Log?api_key=keyuZ9jZifvOzDgPO&view=Gen%20Text%20File&sort[0][field]=Payment%20Status"
+URL_payment_log = "https://api.airtable.com/v0/appPPfFjCC9DChJWc/Payment%20Log?api_key=keyuZ9jZifvOzDgPO"
+URL_payment_status = "https://api.airtable.com/v0/appPPfFjCC9DChJWc/Payment%20Log?api_key=keyuZ9jZifvOzDgPO&view=Gen%20Text%20File&sort[0][field]=Payment%20Status"
 
 
-URL_account_payable = "https://api.airtable.com/v0/appqOh1FcRkhI3EqL/Account%20Payable?api_key=keyuZ9jZifvOzDgPO"
+URL_account_payable = "https://api.airtable.com/v0/appPPfFjCC9DChJWc/Account%20Payable?api_key=keyuZ9jZifvOzDgPO"
 
-URL_account_payable_sort = "https://api.airtable.com/v0/appqOh1FcRkhI3EqL/Account%20Payable?api_key=keyuZ9jZifvOzDgPO&sort[0][field]=ID"
+URL_account_payable_sort = "https://api.airtable.com/v0/appPPfFjCC9DChJWc/Account%20Payable?api_key=keyuZ9jZifvOzDgPO&sort[0][field]=Payable%20ID"
 
 payment_log = requests.get(URL_payment_log)
 payment_status_sort = requests.get(URL_payment_status)
@@ -76,13 +80,15 @@ acc = "0341349230"
 
 #Batch Ref
 batch = "000000"
-
-
-
+date_1 = datetime.datetime.today() + datetime.timedelta(days=2)
+# month_mcl = date_1.month
+# date_mcl = date_1.date
+# year_mcl = date_1.year
+# NextDay_Date_Formatted = date_1.strftime ('%d%m%Y') # format the date to ddmmyyyy
 
 #set date and payment date       
 today = date.strftime("%y")+date.strftime("%m")+date.strftime("%d")
-today_MCL = date.strftime("%d")+"-"+date.strftime("%m")+"-"+date.strftime("%Y")
+today_MCL = date_1.strftime ('%d-%m-%Y')
 
 #set account name
 account_name = "มหาวิทยาลัยซีเอ็มเคแอล"
@@ -122,30 +128,35 @@ paid_data_DCT = 0
 paid_data_MCL = 0
 paid_dct = 0
 paid_MCL = 0
-
+print(status)
 for paid_itr in range(check):
     acc_approve_check = sort['records'][paid_itr]['fields']
-    if 'Approved By' in acc_approve_check :
+    # if 'Approved By' in acc_approve_check :
         # paid = sort['records'][paid_itr]['fields']['Paid Amount']
-        types = sort['records'][paid_itr]['fields']['Payment Type']
-        if types == "Direct Credit (DCT)":
-            # types = "HDCT"
-            if status == "False":
-                paid_dct = sort['records'][paid_itr]['fields']['Paid Amount']
-                paid_data_DCT += paid_dct
-                print("DCT : "+str(paid_data_DCT))
-        elif types == "Smart Credit Next Day (MCL)":
-            if status == "False":
-                paid_MCL = sort['records'][paid_itr]['fields']['Paid Amount']
-                paid_data_MCL += paid_MCL
-                print("MCL : "+str(paid_data_MCL))
-    else:
-       pass
+    types = sort['records'][paid_itr]['fields']['Payment Type']
+    if types == "Direct Credit (DCT)":
+        # types = "HDCT"
+        # print(types)
+        if status == "False":
+            paid_dct = sort['records'][paid_itr]['fields']['Paid Amount']
+            paid_data_DCT += paid_dct
+            print("DCT : "+str(paid_data_DCT))
+    elif types == "Smart Credit Next Day (MCL)":
+        # print(types)
+        if status == "False":
+            paid_MCL = sort['records'][paid_itr]['fields']['Paid Amount']
+            paid_data_MCL += paid_MCL
+            print("MCL : "+str(paid_data_MCL))
+    # else:
+    #    pass
+
+# print(paid_data_DCT)
+# print(paid_data_MCL)
 # print(paid_data)
 # str_paid_MCL = str()
 
 #length of Paid Amount
-paid_l = len(str(paid_data_DCT))+1
+# paid_l = len(str(paid_data_DCT))+1
 
 #print paid amount
 # zr = set_zero(paid_l,13)        
@@ -172,7 +183,7 @@ check_approve = []
 
 for d in range(check):
     acc_approve = sort['records'][d]['fields']
-    if 'Approved By' in acc_approve :
+    if 'Verified by' in acc_approve :
         types = sort['records'][d]['fields']['Payment Type']
         #Setup Type DCT
         if types == "Direct Credit (DCT)":
@@ -199,7 +210,7 @@ for d in range(check):
                 
                 acc_id = sort_am['Paid To'][0]
                 #searching Bank Account Number, Bank Account Name, Payable ID, Bank
-                [acc_num,acc_name,acc_ids,acc_bank] = search_acc(acc_id)               
+                [acc_num,acc_name,acc_ids,acc_bank,acc_ref] = search_acc(acc_id)               
             
                 #Setup Detail 
                 strs += (p+zer+str(c)+"              "+acc_num+" "+amount_zero+str(amount)+" "+today+"                         "+acc_name.ljust(50,' ')+today+"000"+str(acc_ids).ljust(16,' ')+(' '*151)+('0'*10)+"."+('0'*12)+"."+('0'*2)+(' '*156)+"\n")
@@ -215,9 +226,11 @@ for d in range(check):
 
                 sort_am_mcl = sort['records'][d]['fields']
                 amount_mcl = sort_am_mcl['Paid Amount']
+                # payment_id = payable_sort['records'][d]['fields']['Payable ID']
+                print("MCL")
 
                 acc_id_mcl = sort_am_mcl['Paid To'][0]
-                [acc_mcl_num,acc_mcl_name,acc_mcl_id,acc_mcl_bank] = search_acc(acc_id_mcl)
+                [acc_mcl_num,acc_mcl_name,acc_mcl_id,acc_mcl_bank,acc_mcl_ref] = search_acc(acc_id_mcl)
                 str_cut = str(acc_mcl_num)[:3]
 
                 if acc_mcl_bank == "Kasikorn Bank":
@@ -240,7 +253,7 @@ for d in range(check):
                     bank_id = "008"
                 elif acc_mcl_bank == "SUMITOMO MITSUI BANKING CORPORATION":
                     bank_id = "018"
-                elif acc_mcl_bank == "CITIBANK":
+                elif acc_mcl_bank == "Citi Bank":
                     bank_id = "017"
                 elif acc_mcl_bank == "CIMB THAI":
                     bank_id = "022"
@@ -287,7 +300,7 @@ for d in range(check):
                 # print(bank_id)
                 
 
-                str_Detail_MCL += ("D"+(str(total_MCL)).rjust(5,'0')+(' '*5)+str("{:.2f}".format(amount_mcl)).rjust(13,'0')+acc_mcl_name.ljust(80,' ')+(' '*30)+(' '*30)+(' '*30)+(' '*30)+str(acc_mcl_num).rjust(23,'0')+(' '*26)+str_cut.ljust(4,' ')+bank_id+(' '*255)+(' '*10)+(' '*50)+(' '*1)+(' '*50)+(' '*50)+('0'*10)+"."+('0'*12)+"."+('0'*2)+(''*13)+('0'*3)+"\n")
+                str_Detail_MCL += ("D"+(str(total_MCL)).rjust(5,'0')+(' '*5)+str("{:.2f}".format(amount_mcl)).rjust(13,'0')+acc_mcl_name.ljust(80,' ')+(' '*30)+(' '*30)+(' '*30)+(' '*30)+str(acc_mcl_num).rjust(20,'0')+str(acc_mcl_ref).ljust(16,' ')+(' '*13)+str_cut.ljust(4,' ')+bank_id+(' '*255)+(' '*10)+(' '*50)+(' '*1)+(' '*50)+(' '*50)+('0'*10)+"."+('0'*12)+"."+('0'*2)+(''*13)+('0'*3)+"\n")
                 # print(str_Detail_MCL)
     
 
