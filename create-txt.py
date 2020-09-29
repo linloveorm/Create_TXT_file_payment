@@ -183,7 +183,7 @@ check_approve = []
 
 for d in range(check):
     acc_approve = sort['records'][d]['fields']
-    if 'Verified by' in acc_approve :
+    if 'Entered by' in acc_approve :
         types = sort['records'][d]['fields']['Payment Type']
         #Setup Type DCT
         if types == "Direct Credit (DCT)":
